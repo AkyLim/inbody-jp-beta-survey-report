@@ -148,8 +148,8 @@ section{margin:0 0 48px; scroll-margin-top:80px}
 .dist{display:flex; flex-direction:column; gap:6px; margin-top:8px}
 .dist .bar{display:grid; grid-template-columns:24px 1fr 100px; gap:10px; align-items:center; font-size:12px}
 .dist .bar .lbl{color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; font-weight:500}
-.dist .bar .track{background:#eef0f4; height:14px; border-radius:7px; overflow:hidden}
-.dist .bar .fill{height:100%; background:var(--brand); border-radius:7px; transition:width .4s ease}
+.dist .bar .track{display:block; background:#eef0f4; height:14px; border-radius:7px; overflow:hidden}
+.dist .bar .fill{display:block; height:100%; background:var(--brand); border-radius:7px; transition:width .4s ease}
 .dist .bar.s5 .fill{background:#10b981}
 .dist .bar.s4 .fill{background:#34d399}
 .dist .bar.s3 .fill{background:#fbbf24}
@@ -178,8 +178,8 @@ section{margin:0 0 48px; scroll-margin-top:80px}
 .ms .item{display:grid; grid-template-columns:1fr 90px; gap:14px; font-size:13.5px; align-items:center}
 .ms .item .ll{display:flex; flex-direction:column; gap:5px; min-width:0}
 .ms .item .nm{color:var(--ink); font-weight:500}
-.ms .item .tk{background:#eef0f4; height:8px; border-radius:4px; overflow:hidden}
-.ms .item .fl{height:100%; background:var(--brand); border-radius:4px; transition:width .4s ease}
+.ms .item .tk{display:block; background:#eef0f4; height:8px; border-radius:4px; overflow:hidden}
+.ms .item .fl{display:block; height:100%; background:var(--brand); border-radius:4px; transition:width .4s ease}
 .ms .item .pct{font-size:12px; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
 
 /* Insights cards */
