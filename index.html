@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ko" data-lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InBody+ JP Beta Survey Report</title>
+<style>
+:root{
+  --bg:#f5f6fa; --card:#ffffff; --ink:#0f172a; --ink-2:#1e293b; --muted:#64748b;
+  --line:#e2e8f0; --line-2:#f1f5f9;
+  --brand:#2563eb;
+  --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
+  --cluster:#7c3aed; --path:#0891b2; --bigdata:#059669;
+  --shadow:0 1px 2px rgba(15,23,42,.04), 0 4px 16px rgba(15,23,42,.04);
+  --shadow-lg:0 4px 24px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0; -webkit-text-size-adjust:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Pretendard","Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans CJK JP","Yu Gothic UI",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.65;
+  font-size:15px; letter-spacing:-0.01em;
+}
+::selection{background:#dbeafe; color:var(--ink)}
+
+/* Language toggle */
+html[data-lang="ko"] .ja{display:none !important}
+html[data-lang="ja"] .ko{display:none !important}
+.ko, .ja{display:inline}
+div.ko, div.ja{display:block}
+
+/* Top bar */
+.topbar{
+  position:sticky; top:0; z-index:100;
+  background:rgba(255,255,255,0.92); backdrop-filter:saturate(180%) blur(12px);
+  -webkit-backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1180px; margin:0 auto; padding:12px 28px;
+  display:flex; align-items:center; gap:18px;
+}
+.brand-mark{
+  font-weight:700; font-size:14px; letter-spacing:-0.01em;
+  color:var(--ink);
+}
+.brand-mark .dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--brand); margin-right:8px; vertical-align:middle}
+.nav-links{display:flex; gap:4px; margin-left:auto; flex-wrap:wrap}
+.nav-links a{
+  font-size:13px; color:var(--muted); text-decoration:none;
+  padding:6px 12px; border-radius:8px; transition:all .15s ease;
+}
+.nav-links a:hover{background:var(--line-2); color:var(--ink)}
+.lang-switch{
+  display:inline-flex; background:var(--line-2); border-radius:10px; padding:3px;
+  margin-left:14px;
+}
+.lang-switch button{
+  border:none; background:transparent; font:inherit; font-weight:600; font-size:12.5px;
+  padding:6px 14px; border-radius:7px; cursor:pointer; color:var(--muted);
+  transition:all .15s ease; letter-spacing:0;
+}
+.lang-switch button.active{
+  background:#fff; color:var(--ink); box-shadow:0 1px 3px rgba(15,23,42,.08);
+}
+.lang-switch button:hover:not(.active){color:var(--ink-2)}
+@media (max-width:760px){
+  .nav-links{display:none}
+  .topbar-inner{padding:10px 16px}
+}
+
+/* Reading progress */
+.progress-bar{
+  position:fixed; top:0; left:0; height:3px; background:var(--brand);
+  width:0%; z-index:101; transition:width .1s ease-out;
+}
+
+.wrap{max-width:1180px; margin:0 auto; padding:48px 28px 80px}
+@media (max-width:760px){.wrap{padding:32px 16px 64px}}
+
+header.top{margin-bottom:36px}
+.eyebrow{
+  display:inline-block; padding:6px 13px; border-radius:999px;
+  background:#eff6ff; color:var(--brand); font-size:12px; font-weight:600;
+  letter-spacing:0.04em; margin-bottom:14px;
+}
+h1{font-size:36px; line-height:1.22; margin:0 0 12px; letter-spacing:-0.025em; font-weight:700}
+.subtitle{color:var(--muted); font-size:16px; margin:0; line-height:1.6}
+.meta{display:flex; gap:18px; margin-top:18px; color:var(--muted); font-size:13px; flex-wrap:wrap}
+.meta b{color:var(--ink); font-weight:600}
+
+/* KPI */
+.kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:32px 0 40px}
+.kpi{
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:20px 22px; box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .15s ease;
+}
+.kpi:hover{transform:translateY(-1px); box-shadow:var(--shadow-lg)}
+.kpi .label{font-size:11px; color:var(--muted); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px}
+.kpi .value{font-size:34px; font-weight:700; line-height:1.1; letter-spacing:-0.025em}
+.kpi .sub{font-size:13px; color:var(--muted); margin-top:4px; line-height:1.45}
+.kpi.good .value{color:var(--good)}
+.kpi.mid .value{color:var(--warn)}
+.kpi.bad .value{color:var(--bad)}
+
+/* Section */
+section{margin:0 0 48px; scroll-margin-top:80px}
+.sec-head{
+  display:flex; align-items:center; gap:14px; margin-bottom:20px;
+  padding-bottom:14px; border-bottom:2px solid var(--ink);
+}
+.sec-tag{
+  font-size:11px; padding:5px 11px; border-radius:6px; color:#fff;
+  font-weight:700; letter-spacing:0.06em;
+}
+.sec-tag.cluster{background:var(--cluster)}
+.sec-tag.path{background:var(--path)}
+.sec-tag.bigdata{background:var(--bigdata)}
+.sec-tag.overall{background:var(--ink)}
+.sec-head h2{font-size:26px; margin:0; letter-spacing:-0.025em; font-weight:700}
+.sec-head .sec-sub{color:var(--muted); font-size:13px; margin-left:auto; text-align:right; line-height:1.45}
+@media (max-width:760px){.sec-head .sec-sub{display:none}}
+
+/* Cards */
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:22px 24px; margin-bottom:14px; box-shadow:var(--shadow);
+}
+.card h3{margin:0 0 6px; font-size:16px; font-weight:600; letter-spacing:-0.015em}
+.card .qhint{color:var(--muted); font-size:13px; margin-bottom:14px; line-height:1.55}
+.card .note{font-size:12.5px; color:var(--muted); margin:10px 0 0; line-height:1.6}
+
+.row2{display:grid; grid-template-columns:1.05fr 1fr; gap:14px}
+.row3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+@media (max-width:900px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .row2,.row3{grid-template-columns:1fr}
+}
+
+/* Score block */
+.score-row{display:flex; align-items:flex-end; gap:18px; margin:8px 0 14px}
+.score-num{font-size:46px; font-weight:700; line-height:1; letter-spacing:-0.03em}
+.score-of{font-size:15px; color:var(--muted); margin-bottom:8px; line-height:1.4}
+.score-meta{font-size:12px; color:var(--muted); margin-bottom:8px; line-height:1.55}
+.score-meta b{color:var(--ink); font-weight:600}
+
+/* Distribution bars */
+.dist{display:flex; flex-direction:column; gap:6px; margin-top:8px}
+.dist .bar{display:grid; grid-template-columns:24px 1fr 100px; gap:10px; align-items:center; font-size:12px}
+.dist .bar .lbl{color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; font-weight:500}
+.dist .bar .track{background:#eef0f4; height:14px; border-radius:7px; overflow:hidden}
+.dist .bar .fill{height:100%; background:var(--brand); border-radius:7px; transition:width .4s ease}
+.dist .bar.s5 .fill{background:#10b981}
+.dist .bar.s4 .fill{background:#34d399}
+.dist .bar.s3 .fill{background:#fbbf24}
+.dist .bar.s2 .fill{background:#fb923c}
+.dist .bar.s1 .fill{background:#ef4444}
+.dist .bar .cnt{font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* NPS */
+.nps-strip{display:flex; height:18px; border-radius:9px; overflow:hidden; margin:8px 0 6px; border:1px solid var(--line)}
+.nps-det{background:#fee2e2}
+.nps-pas{background:#fef3c7}
+.nps-pro{background:#d1fae5}
+.nps-legend{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:10px}
+.nps-num{font-size:40px; font-weight:700; letter-spacing:-0.03em; line-height:1}
+.nps-num.good{color:var(--good)}
+.nps-num.mid{color:var(--warn)}
+.nps-num.bad{color:var(--bad)}
+.nps-pdn{display:flex; gap:14px; font-size:12.5px; flex-wrap:wrap; line-height:1.5}
+.pill-pro{color:var(--good)}
+.pill-pas{color:var(--warn)}
+.pill-det{color:var(--bad)}
+.pill-pro b, .pill-pas b, .pill-det b{font-weight:600}
+
+/* Multi-select */
+.ms{display:flex; flex-direction:column; gap:9px}
+.ms .item{display:grid; grid-template-columns:1fr 90px; gap:14px; font-size:13.5px; align-items:center}
+.ms .item .ll{display:flex; flex-direction:column; gap:5px; min-width:0}
+.ms .item .nm{color:var(--ink); font-weight:500}
+.ms .item .tk{background:#eef0f4; height:8px; border-radius:4px; overflow:hidden}
+.ms .item .fl{height:100%; background:var(--brand); border-radius:4px; transition:width .4s ease}
+.ms .item .pct{font-size:12px; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* Insights cards */
+.insights{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:6px}
+@media (max-width:900px){.insights{grid-template-columns:1fr}}
+.ins{
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:20px 22px; box-shadow:var(--shadow);
+}
+.ins h4{margin:0 0 14px; font-size:14px; display:flex; align-items:center; gap:8px; font-weight:600}
+.ins h4 .dot{width:9px; height:9px; border-radius:50%; display:inline-block}
+.ins.good h4 .dot{background:var(--good)}
+.ins.warn h4 .dot{background:var(--warn)}
+.ins.bad h4 .dot{background:var(--bad)}
+.ins ul{margin:0; padding:0; list-style:none}
+.ins li{padding:10px 0; border-top:1px solid var(--line-2); font-size:13.5px; line-height:1.6}
+.ins li:first-child{border-top:none; padding-top:0}
+.ins li b{font-weight:600}
+.ins li .q{
+  color:#475569; font-size:12.5px; display:block; margin-top:6px;
+  padding:8px 12px; border-left:3px solid var(--line); background:#f8fafc;
+  border-radius:0 6px 6px 0; font-style:normal; line-height:1.55;
+}
+.ins .count{
+  font-size:11px; color:var(--muted); margin-left:6px; font-weight:500;
+  background:var(--line-2); padding:2px 7px; border-radius:4px;
+}
+
+/* Bulleted lists for stages / strategic */
+ul.bulleted, ol.bulleted{margin:8px 0 0; padding-left:20px}
+ul.bulleted li, ol.bulleted li{padding:5px 0; font-size:13.5px; line-height:1.65}
+ul.bulleted li b, ol.bulleted li b{font-weight:600}
+
+/* Priority box */
+.priority{
+  background:linear-gradient(180deg,#fffbeb 0%,#fef3c7 100%);
+  border:1px solid #fde68a; border-radius:14px;
+  padding:24px 26px; margin-bottom:32px;
+}
+.priority h3{margin:0 0 12px; font-size:18px; display:flex; align-items:center; gap:10px; font-weight:600}
+.priority h3::before{
+  content:""; display:inline-block; width:6px; height:22px; border-radius:3px;
+  background:var(--warn);
+}
+.priority ol{margin:0; padding-left:24px}
+.priority li{padding:7px 0; font-size:14.5px; line-height:1.65}
+.priority li b{color:var(--ink)}
+
+/* Exec summary */
+.exec{
+  background:linear-gradient(180deg,#eff6ff 0%, #f5f9ff 100%);
+  border:1px solid #dbeafe; border-radius:18px;
+  padding:30px 34px; margin-bottom:36px;
+}
+.exec h2{margin:0 0 14px; font-size:20px; font-weight:700; letter-spacing:-0.015em}
+.exec p{margin:0 0 12px; font-size:15px; line-height:1.78}
+.exec p:last-child{margin-bottom:0}
+.exec .hl{background:#fef08a; padding:1px 5px; border-radius:3px; font-weight:600}
+
+/* Strategic block */
+.card.strategic{background:linear-gradient(180deg,#f0f7ff 0%,#fafcff 100%); border-color:#cfe1ff}
+.card.strategic h3{font-size:17px; margin-bottom:8px}
+.card.strategic ol{margin:6px 0 0; padding-left:22px}
+.card.strategic ol li{padding:7px 0; font-size:14px; line-height:1.7}
+
+footer{
+  margin-top:60px; padding-top:24px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:12px; text-align:center; line-height:1.6;
+}
+
+/* Back to top */
+.back-top{
+  position:fixed; bottom:24px; right:24px;
+  width:44px; height:44px; border-radius:22px;
+  background:var(--ink); color:#fff; border:none; cursor:pointer;
+  display:none; align-items:center; justify-content:center;
+  font-size:18px; box-shadow:0 4px 16px rgba(15,23,42,.2);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.back-top:hover{transform:translateY(-2px)}
+.back-top.show{display:flex}
+
+/* Print */
+@media print{
+  .topbar, .progress-bar, .back-top{display:none !important}
+  .wrap{padding:0}
+  body{background:#fff}
+  .card, .ins, .kpi, .exec, .priority{break-inside:avoid; box-shadow:none; border-color:#ccc}
+  section{break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="brand-mark"><span class="dot"></span>InBody+ JP Beta</span>
+    <div class="nav-links">
+      <a href="#summary"><span class="ko" lang="ko">요약</span><span class="ja" lang="ja">サマリー</span></a>
+      <a href="#priority"><span class="ko" lang="ko">우선순위</span><span class="ja" lang="ja">優先度</span></a>
+      <a href="#cluster"><span class="ko" lang="ko">Cluster</span><span class="ja" lang="ja">Cluster</span></a>
+      <a href="#pathfinder"><span class="ko" lang="ko">Pathfinder</span><span class="ja" lang="ja">Pathfinder</span></a>
+      <a href="#bigdata"><span class="ko" lang="ko">Big Data</span><span class="ja" lang="ja">Big Data</span></a>
+      <a href="#overall"><span class="ko" lang="ko">전체 의견</span><span class="ja" lang="ja">全体感想</span></a>
+    </div>
+    <div class="lang-switch" role="tablist" aria-label="Language">
+      <button data-lang="ko" class="active" role="tab">한국어</button>
+      <button data-lang="ja" role="tab">日本語</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<header class="top">
+  <span class="eyebrow"><span class="ko" lang="ko">InBody+ 베타테스트 피드백 · 일본 법인</span><span class="ja" lang="ja">InBody+ ベータテストフィードバック · 日本法人</span></span>
+  <h1><span class="ko" lang="ko">일본 법인 베타테스터 설문 결과 리포트</span><span class="ja" lang="ja">日本法人ベータテスター調査レポート</span></h1>
+  <p class="subtitle"><span class="ko" lang="ko">Cluster · Pathfinder · Big Data 3개 핵심 기능에 대한 사용자 인식, 정량 평가, 그리고 자유 응답에서 추출한 인사이트.</span><span class="ja" lang="ja">Cluster・Pathfinder・Big Data の3つの中核機能に対するユーザー認識、定量評価、自由回答から抽出したインサイト。</span></p>
+  <div class="meta">
+    <span><b><span class="ko" lang="ko">응답자 수</span><span class="ja" lang="ja">回答者数</span></b> <span class="ko" lang="ko">42명</span><span class="ja" lang="ja">42名</span></span>
+    <span><b><span class="ko" lang="ko">설문 기간</span><span class="ja" lang="ja">調査期間</span></b> 2026-04-21 ~ 04-29</span>
+    <span><b><span class="ko" lang="ko">문항 수</span><span class="ja" lang="ja">設問数</span></b> <span class="ko" lang="ko">31개 (수치평가 9 / NPS 3 / 다중선택 4 / 자유응답 14)</span><span class="ja" lang="ja">31問（定量評価9 / NPS 3 / 複数選択4 / 自由回答14）</span></span>
+  </div>
+</header>
+
+<div class="kpi-grid">
+  <div class="kpi good">
+    <div class="label">Big Data NPS</div>
+    <div class="value">+28.6</div>
+    <div class="sub"><span class="ko" lang="ko">3개 기능 중 최고 추천 의향</span><span class="ja" lang="ja">3機能中で最高の推奨意向</span></div>
+  </div>
+  <div class="kpi good">
+    <div class="label">Cluster NPS</div>
+    <div class="value">+21.4</div>
+    <div class="sub"><span class="ko" lang="ko">"MBTI 같다"는 호평 다수</span><span class="ja" lang="ja">「MBTIのようだ」と好評多数</span></div>
+  </div>
+  <div class="kpi mid">
+    <div class="label">Pathfinder NPS</div>
+    <div class="value">+2.4</div>
+    <div class="sub"><span class="ko" lang="ko">설계는 좋지만 액션 가이드 부재</span><span class="ja" lang="ja">設計は良いがアクションガイドが不足</span></div>
+  </div>
+  <div class="kpi">
+    <div class="label"><span class="ko" lang="ko">전체 평균 만족도</span><span class="ja" lang="ja">全体平均満足度</span></div>
+    <div class="value">4.08<span style="font-size:18px;color:var(--muted)">/5</span></div>
+    <div class="sub"><span class="ko" lang="ko">9개 수치평가 항목 평균</span><span class="ja" lang="ja">9つの定量評価項目の平均</span></div>
+  </div>
+</div>
+
+<section id="summary">
+<div class="exec">
+  <h2><span class="ko" lang="ko">한 줄 요약</span><span class="ja" lang="ja">ひと言サマリー</span></h2>
+  <p><span class="ko" lang="ko"><b>"체성분을 객관적으로 비교하고 게임처럼 즐기게 만드는 컨셉" 자체는 일본 사용자에게 강하게 통했다.</b> 다만 <span class="hl">컨텐츠 정보량 과다</span>, <span class="hl">"클러스터" 단어의 부정적 이미지(감염 클러스터 연상)</span>, <span class="hl">목표 설정 후 구체적 행동 가이드 부재</span>, <span class="hl">UI 발견성 문제(각 항목 탭 인식 어려움)</span>가 공통 페인포인트로 반복 등장한다.</span><span class="ja" lang="ja"><b>「体成分を客観的に比較し、ゲーム感覚で楽しめるコンセプト」自体は、日本のユーザーに強く刺さった。</b>一方で<span class="hl">コンテンツの情報量が多すぎる</span>、<span class="hl">「クラスター」という単語のネガティブな印象（感染クラスターを連想）</span>、<span class="hl">目標設定後の具体的なアクションガイドがない</span>、<span class="hl">UIの発見性問題（各項目をタップできることに気付けない）</span>が共通の課題として繰り返し挙がった。</span></p>
+  <p><span class="ko" lang="ko">특히 Pathfinder는 "목표는 알겠는데 그래서 뭘 하면 되나?"라는 질문이 가장 많이 나왔다 — 운동/식단 추천, 외부 시설 연계, 단순/상세 모드 분리가 라이트 유저 확보의 핵심 레버다.</span><span class="ja" lang="ja">特にPathfinderは「目標は分かったが、ではどう動けばよいのか？」という疑問が最も多く出た。運動・食事レコメンド、外部施設連携、シンプル／詳細モードの切り替えがライトユーザー獲得の鍵となる。</span></p>
+</div>
+</section>
+
+<section id="priority">
+
+    <div class="priority">
+      <h3><span class="ko" lang="ko">실행 우선순위 TOP 5 — 응답에서 가장 자주 반복된 요구</span><span class="ja" lang="ja">実行優先度 TOP 5 — 回答に最も多く繰り返された要求</span></h3>
+      <ol><li><div class="ko" lang="ko"><b>목표 설정 후의 행동 가이드 자동 연동</b> — Pathfinder에서 목표를 정한 뒤 식단/운동/추천 시설로 자연 흐름. (Q19/Q21/Q30에서 7명 이상 직접 언급)</div><div class="ja" lang="ja"><b>目標設定後のアクションガイド自動連動</b> — Pathfinderで目標を決めた後、食事・運動・推薦施設へ自然に繋がる導線。(Q19/Q21/Q30で7名以上が直接言及)</div></li><li><div class="ko" lang="ko"><b>"クラスター" 명칭 재검토</b> — 의학에서 부정적 의미(감염 클러스터). "분석", "체형 평가", "그룹" 등 대안 검토 요청 다수.</div><div class="ja" lang="ja"><b>「クラスター」名称の再検討</b> — 医療分野ではネガティブな意味（感染クラスター）。「分析」「体型評価」「グループ」など代替案の要望多数。</div></li><li><div class="ko" lang="ko"><b>정보량 다이어트 + 단순/상세 모드 분리</b> — 라이트 유저에게는 압도적, 헤비 유저에게는 적절. 한 화면에 텍스트가 너무 많다는 지적 8건+.</div><div class="ja" lang="ja"><b>情報量ダイエット + シンプル／詳細モード分離</b> — ライトユーザーには圧倒的、ヘビーユーザーには適切。「1画面に文章が多すぎる」という指摘が8件以上。</div></li><li><div class="ko" lang="ko"><b>UI 발견성 개선</b> — Big Data에서 "각 항목 탭 시 상세 그래프"를 모르는 사용자 다수. ＞ 화살표/안내 텍스트 추가. 그래프 영역 활성화 기능도 동일.</div><div class="ja" lang="ja"><b>UIの発見性改善</b> — Big Dataで「各項目をタップすると詳細グラフが表示される」ことを知らないユーザー多数。＞ 矢印・案内テキスト追加。グラフ領域の活性化機能も同様。</div></li><li><div class="ko" lang="ko"><b>SNS 공유 기능</b> — MBTI처럼 "내 클러스터 공유" 요청 3건+. 자연 확산 레버로 가장 가성비 좋은 기능.</div><div class="ja" lang="ja"><b>SNSシェア機能</b> — MBTIのように「自分のクラスターをシェア」する要望3件以上。自然拡散レバーとして最もコスパが良い機能。</div></li></ol>
+    </div>
+</section>
+
+<section id="cluster">
+  <div class="sec-head">
+    <span class="sec-tag cluster">CLUSTER</span>
+    <h2><span class="ko" lang="ko">클러스터 기능</span><span class="ja" lang="ja">クラスター機能</span></h2>
+    <span class="sec-sub"><span class="ko" lang="ko">정량 평균 4.0~4.1/5 · NPS +21.4 · 가장 호평받은 컨셉</span><span class="ja" lang="ja">定量平均 4.0~4.1/5 · NPS +21.4 · 最も好評を得たコンセプト</span></span>
+  </div>
+
+  <div class="row3">
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">실제 자신과의 일치도</span><span class="ja" lang="ja">実際の自分との一致度</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">クラスターの内容が、実際のご自身とどの程度一致していると感じましたか？</span><span class="ja" lang="ja">クラスターの内容が、実際のご自身とどの程度一致していると感じましたか？</span></div>
+      <div class="score-row"><div class="score-num">4.12</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 4.5 · 표준편차 1.09 · n=42</div><div class="ja" lang="ja">中央値 4.5 · 標準偏差 1.09 · n=42</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:50.0%"></span></span><span class="cnt">21<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (50.0%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:23.8%"></span></span><span class="cnt">10<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (23.8%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:16.7%"></span></span><span class="cnt">7<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (16.7%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:7.1%"></span></span><span class="cnt">3<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (7.1%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:2.4%"></span></span><span class="cnt">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (2.4%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">체성분 이해 도움 정도</span><span class="ja" lang="ja">体成分の理解への寄与度</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">クラスター機能は、ご自身の体成分を理解するのにどの程度役立ちましたか？</span><span class="ja" lang="ja">クラスター機能は、ご自身の体成分を理解するのにどの程度役立ちましたか？</span></div>
+      <div class="score-row"><div class="score-num">4.14</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 4.0 · 표준편차 0.93 · n=42</div><div class="ja" lang="ja">中央値 4.0 · 標準偏差 0.93 · n=42</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:38.1%"></span></span><span class="cnt">16<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (38.1%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:47.6%"></span></span><span class="cnt">20<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (47.6%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:7.1%"></span></span><span class="cnt">3<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (7.1%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:4.8%"></span></span><span class="cnt">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (4.8%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:2.4%"></span></span><span class="cnt">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (2.4%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">전체 분량 적정도</span><span class="ja" lang="ja">コンテンツ全体の分量</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">クラスターコンテンツ全体の分量はいかがでしたか？</span><span class="ja" lang="ja">クラスターコンテンツ全体の分量はいかがでしたか？</span></div>
+      <div class="score-row"><div class="score-num">3.98</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 4.0 · 표준편차 0.84 · n=42 · 분량 과다라는 자유응답 다수 — 점수만으로 안심 금물</div><div class="ja" lang="ja">中央値 4.0 · 標準偏差 0.84 · n=42 · 「分量過多」との自由回答多数 — 点数だけで安心は禁物</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:33.3%"></span></span><span class="cnt">14<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (33.3%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:31.0%"></span></span><span class="cnt">13<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (31.0%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:35.7%"></span></span><span class="cnt">15<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (35.7%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:0.0%"></span></span><span class="cnt">0<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (0.0%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:0.0%"></span></span><span class="cnt">0<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (0.0%)</span></div></div>
+    </div>
+  </div>
+
+  <div class="row2">
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">지인·가족 추천 의향 (NPS)</span><span class="ja" lang="ja">知人・家族への推奨意向 (NPS)</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">クラスターを、知人や家族に勧めたいと思いますか？ (0~10점)</span><span class="ja" lang="ja">クラスターを、知人や家族に勧めたいと思いますか？ (0~10点)</span></div>
+      <div class="score-row">
+        <div class="nps-num good">+21.4</div>
+        <div class="score-of"><div class="ko" lang="ko">평균 7.88 / 중앙값 8.0</div><div class="ja" lang="ja">平均 7.88 / 中央値 8.0</div></div>
+      </div>
+      <div class="nps-strip">
+        <div class="nps-det" style="flex:11"></div>
+        <div class="nps-pas" style="flex:11"></div>
+        <div class="nps-pro" style="flex:20"></div>
+      </div>
+      <div class="nps-legend">
+        <span>0~6 (<span class="ko" lang="ko">Detractor</span><span class="ja" lang="ja">Detractor</span>)</span>
+        <span>7~8 (<span class="ko" lang="ko">Passive</span><span class="ja" lang="ja">Passive</span>)</span>
+        <span>9~10 (<span class="ko" lang="ko">Promoter</span><span class="ja" lang="ja">Promoter</span>)</span>
+      </div>
+      <div class="nps-pdn">
+        <span class="pill-pro"><b>Promoter</b> 20<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (47.6%)</span>
+        <span class="pill-pas"><b>Passive</b> 11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (26.2%)</span>
+        <span class="pill-det"><b>Detractor</b> 11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (26.2%)</span>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">체성분 이해에 도움된 요소 (복수선택)</span><span class="ja" lang="ja">体成分理解に役立った要素（複数選択）</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">ご自身の体成分を理解するのに役立った部分</span><span class="ja" lang="ja">ご自身の体成分を理解するのに役立った部分</span></div>
+      <div class="ms">
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">히스토그램·퍼센타일</span><span class="ja" lang="ja">ヒストグラム・パーセンタイル</span></span>
+            <span class="tk" style=""><span class="fl" style="width:69.0%"></span></span>
+          </div>
+          <span class="pct">29<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 69.0%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">바디 타입</span><span class="ja" lang="ja">ボディタイプ</span></span>
+            <span class="tk" style=""><span class="fl" style="width:64.3%"></span></span>
+          </div>
+          <span class="pct">27<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 64.3%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">클러스터 설명</span><span class="ja" lang="ja">クラスターの説明</span></span>
+            <span class="tk" style=""><span class="fl" style="width:61.9%"></span></span>
+          </div>
+          <span class="pct">26<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 61.9%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체형 2D 맵</span><span class="ja" lang="ja">クラスター体型2Dマップ</span></span>
+            <span class="tk" style=""><span class="fl" style="width:47.6%"></span></span>
+          </div>
+          <span class="pct">20<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 47.6%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">클러스터 이름</span><span class="ja" lang="ja">クラスター名</span></span>
+            <span class="tk" style=""><span class="fl" style="width:45.2%"></span></span>
+          </div>
+          <span class="pct">19<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 45.2%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">클러스터 랭크</span><span class="ja" lang="ja">クラスターランク</span></span>
+            <span class="tk" style=""><span class="fl" style="width:40.5%"></span></span>
+          </div>
+          <span class="pct">17<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 40.5%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">클래스 등급</span><span class="ja" lang="ja">クラス等級</span></span>
+            <span class="tk" style=""><span class="fl" style="width:40.5%"></span></span>
+          </div>
+          <span class="pct">17<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 40.5%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체형 3D 맵</span><span class="ja" lang="ja">クラスター体型3Dマップ</span></span>
+            <span class="tk" style=""><span class="fl" style="width:33.3%"></span></span>
+          </div>
+          <span class="pct">14<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 33.3%</span>
+        </div></div>
+      
+    </div>
+  </div>
+
+  <div class="insights">
+    
+    <div class="ins good">
+      <h4><span class="dot"></span><span class="ko" lang="ko">좋았던 점 (Q5) — 핵심 테마</span><span class="ja" lang="ja">良かった点 (Q5) — 主要テーマ</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>MBTI 같은 재미있는 네이밍</b><span class="count">8건+</span></span><span class="ja" lang="ja"><b>MBTIのようなユーモラスなネーミング</b><span class="count">8件以上</span></span><span class="q">"クラスターの名前がmbtiのようで面白く、人と見せ合ってコミュニケーションのきっかけになった"</span></li><li><span class="ko" lang="ko"><b>동년대·일본인 평균과의 객관적 비교</b><span class="count">9건+</span></span><span class="ja" lang="ja"><b>同年代・日本人平均との客観的比較</b><span class="count">9件以上</span></span><span class="q">"日本の同じ体型の人と比較ができ、客観的に自己評価できた"</span></li><li><span class="ko" lang="ko"><b>일러스트로 시각화 → 모티베이션</b><span class="count">7건+</span></span><span class="ja" lang="ja"><b>イラストによる可視化 → モチベーション向上</b><span class="count">7件以上</span></span><span class="q">"イラストが楽しい。次のクラスターが気になり毎日測定したい"</span></li><li><span class="ko" lang="ko"><b>게임성 / 단계별 성장 감각</b><span class="count">5건+</span></span><span class="ja" lang="ja"><b>ゲーム性 / 段階的な成長感覚</b><span class="count">5件以上</span></span><span class="q">"クラスターが徐々に良くなるゲーム性があり、過度なダイエット抑制にも期待"</span></li><li><span class="ko" lang="ko"><b>"좋은 점만이 아닌 개선점도 알려준다"</b></span><span class="ja" lang="ja"><b>良い点だけでなく改善点も教えてくれる</b></span><span class="q">"スリム型だが隠れ肥満リスクをちゃんと書いてくれている"</span></li></ul>
+    </div>
+    
+    <div class="ins warn">
+      <h4><span class="dot"></span><span class="ko" lang="ko">걱정·혼란 포인트 (Q6)</span><span class="ja" lang="ja">気になった・混乱した点 (Q6)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>정보량·문장량이 너무 많음</b><span class="count">5건+</span></span><span class="ja" lang="ja"><b>情報量・文章量が多すぎる</b><span class="count">5件以上</span></span><span class="q">"文章量が多い / 説明文が長すぎる / 情報が多いため理解が難しい"</span></li><li><span class="ko" lang="ko"><b>"クラスター" 단어 = 의학에서 감염 연상</b><span class="count">2건</span></span><span class="ja" lang="ja"><b>「クラスター」=医療では感染を連想</b><span class="count">2件</span></span><span class="q">"クラスターという単語にポジティブなイメージがない、グループ・カテゴリのほうが良い"</span></li><li><span class="ko" lang="ko"><b>Class·Rank·Fitscore 표기 의미 불명</b><span class="count">5건+</span></span><span class="ja" lang="ja"><b>Class・Rank・Fitscore の表記の意味が不明</b><span class="count">5件以上</span></span><span class="q">"13/43という表記が、43種類中13番目なのか 測定者43人中13番目なのかわからない"</span></li><li><span class="ko" lang="ko"><b>3D/2D 맵 조작·가독성</b><span class="count">5건+</span></span><span class="ja" lang="ja"><b>3D/2D マップの操作・可読性</b><span class="count">5件以上</span></span><span class="q">"3Dマップの見方が分からない / テキストに隠れて見えない / 操作感はなれないと難しい"</span></li><li><span class="ko" lang="ko"><b>身体年齢 "낮음/높음" 표기 직관성 부족</b></span><span class="ja" lang="ja"><b>身体年齢「低い／高い」表記が直感的でない</b></span><span class="q">"「低い」「高い」より「若い」「若くない」のほうが分かりやすい"</span></li><li><span class="ko" lang="ko"><b>일러스트의 "AI 생성 느낌" → 싸구려 인상</b></span><span class="ja" lang="ja"><b>イラストが「AI生成感」 → 安っぽい印象</b></span><span class="q">"イラストがAIで作った感が強く、少し安っぽさを感じる"</span></li></ul>
+    </div>
+    
+    <div class="ins bad">
+      <h4><span class="dot"></span><span class="ko" lang="ko">개선 요청 (Q7)</span><span class="ja" lang="ja">改善要望 (Q7)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>SNS 공유 기능 추가</b><span class="count">3건+</span></span><span class="ja" lang="ja"><b>SNSシェア機能の追加</b><span class="count">3件以上</span></span><span class="q">"InBodyクラスターをSNSで共有できるとアプリ拡散にも繋がる"</span></li><li><span class="ko" lang="ko"><b>다른 클러스터 일러스트·정보 미리보기</b><span class="count">3건</span></span><span class="ja" lang="ja"><b>他のクラスターのイラスト・情報のプレビュー</b><span class="count">3件</span></span><span class="q">"クラスターの一覧があれば見るのに楽しめそう。シークレットクラスターも"</span></li><li><span class="ko" lang="ko"><b>각 클러스터별 추천 식단·운동 가이드</b></span><span class="ja" lang="ja"><b>各クラスター別の推薦食事・運動ガイド</b></span><span class="q">"日本人はすぐ「じゃあ何をすれば？」と求める。クラスター別レシピやトレーニングをアドバイスできるとより良い"</span></li><li><span class="ko" lang="ko"><b>"클러스터" 명칭 변경 검토</b><span class="count">2건</span></span><span class="ja" lang="ja"><b>「クラスター」名称変更の検討</b><span class="count">2件</span></span><span class="q">"医療では感染を想像し良くない意味、分析などに名称変更したほうが良い"</span></li><li><span class="ko" lang="ko"><b>"안전지대 착륙" 등 직관적이지 않은 명칭</b></span><span class="ja" lang="ja"><b>「安全地帯に着地」など直感的でない名称</b></span><span class="q">"安全地帯に着地の意味がわからない、バランス型のほうが分かりやすい"</span></li><li><span class="ko" lang="ko"><b>중요 키워드 강조 / 단순 표시 모드</b></span><span class="ja" lang="ja"><b>重要キーワードの強調 / シンプル表示モード</b></span><span class="q">"全部読ませるのは厳しい、重要な部分の抑揚を / 初めてでも使いやすい簡易表示"</span></li><li><span class="ko" lang="ko"><b>처리 속도·표시 오류</b></span><span class="ja" lang="ja"><b>処理速度・表示エラー</b></span><span class="q">"「リクエスト中にエラーが発生」となりクラスターが表示できないことがあった"</span></li></ul>
+    </div>
+  </div>
+</section>
+
+<section id="pathfinder">
+  <div class="sec-head">
+    <span class="sec-tag path">PATHFINDER</span>
+    <h2><span class="ko" lang="ko">패스파인더 기능</span><span class="ja" lang="ja">パスファインダー機能</span></h2>
+    <span class="sec-sub"><span class="ko" lang="ko">정량 평균 3.71~3.79/5 · NPS +2.4 · <b>가장 약한 영역 — 액션 가이드 갭</b></span><span class="ja" lang="ja">定量平均 3.71~3.79/5 · NPS +2.4 · <b>最も弱い領域 — アクションガイドのギャップ</b></span></span>
+  </div>
+
+  <div class="row3">
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">설정한 목표에 대한 만족도</span><span class="ja" lang="ja">設定した目標への満足度</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">パスファインダーで設定した目標は気に入りましたか？</span><span class="ja" lang="ja">パスファインダーで設定した目標は気に入りましたか？</span></div>
+      <div class="score-row"><div class="score-num">3.79</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 4.0 · 표준편차 1.16 · n=42 · 3개 평가 중 최저 — Pathfinder 평가 최저</div><div class="ja" lang="ja">中央値 4.0 · 標準偏差 1.16 · n=42 · 3つの評価中で最低 — Pathfinder評価で最低</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:31.0%"></span></span><span class="cnt">13<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (31.0%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:35.7%"></span></span><span class="cnt">15<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (35.7%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:21.4%"></span></span><span class="cnt">9<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (21.4%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:4.8%"></span></span><span class="cnt">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (4.8%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:7.1%"></span></span><span class="cnt">3<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (7.1%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">스텝 목표 안내 화면 이해도</span><span class="ja" lang="ja">ステップ目標案内画面の分かりやすさ</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">今回のステップの目標を案内する画面の分かりやすさ</span><span class="ja" lang="ja">今回のステップの目標を案内する画面の分かりやすさ</span></div>
+      <div class="score-row"><div class="score-num">3.71</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 4.0 · 표준편차 1.07 · n=42</div><div class="ja" lang="ja">中央値 4.0 · 標準偏差 1.07 · n=42</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:26.2%"></span></span><span class="cnt">11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (26.2%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:33.3%"></span></span><span class="cnt">14<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (33.3%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:31.0%"></span></span><span class="cnt">13<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (31.0%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:4.8%"></span></span><span class="cnt">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (4.8%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:4.8%"></span></span><span class="cnt">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (4.8%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">지인·가족 추천 의향 (NPS)</span><span class="ja" lang="ja">知人・家族への推奨意向 (NPS)</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">パスファインダーを知人や家族に勧めたいと思いますか？</span><span class="ja" lang="ja">パスファインダーを知人や家族に勧めたいと思いますか？</span></div>
+      <div class="score-row">
+        <div class="nps-num mid">+2.4</div>
+        <div class="score-of"><div class="ko" lang="ko">평균 7.4 / 중앙값 8.0</div><div class="ja" lang="ja">平均 7.4 / 中央値 8.0</div></div>
+      </div>
+      <div class="nps-strip">
+        <div class="nps-det" style="flex:14"></div>
+        <div class="nps-pas" style="flex:13"></div>
+        <div class="nps-pro" style="flex:15"></div>
+      </div>
+      <div class="nps-legend">
+        <span>0~6 (<span class="ko" lang="ko">Detractor</span><span class="ja" lang="ja">Detractor</span>)</span>
+        <span>7~8 (<span class="ko" lang="ko">Passive</span><span class="ja" lang="ja">Passive</span>)</span>
+        <span>9~10 (<span class="ko" lang="ko">Promoter</span><span class="ja" lang="ja">Promoter</span>)</span>
+      </div>
+      <div class="nps-pdn">
+        <span class="pill-pro"><b>Promoter</b> 15<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (35.7%)</span>
+        <span class="pill-pas"><b>Passive</b> 13<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (31.0%)</span>
+        <span class="pill-det"><b>Detractor</b> 14<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (33.3%)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row2">
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">기존에 건강 목표를 정하던 방식 (복수선택)</span><span class="ja" lang="ja">これまでの健康目標の立て方（複数選択）</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">これまで健康に関する目標を立てる際、どのような方法で？</span><span class="ja" lang="ja">これまで健康に関する目標を立てる際、どのような方法で？</span></div>
+      <div class="ms">
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체지방률</span><span class="ja" lang="ja">体脂肪率</span></span>
+            <span class="tk" style=""><span class="fl" style="width:76.2%"></span></span>
+          </div>
+          <span class="pct">32<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 76.2%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체중</span><span class="ja" lang="ja">体重</span></span>
+            <span class="tk" style=""><span class="fl" style="width:57.1%"></span></span>
+          </div>
+          <span class="pct">24<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 57.1%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">외모(거울로 본 자신)</span><span class="ja" lang="ja">見た目（鏡で見る自分の体など）</span></span>
+            <span class="tk" style=""><span class="fl" style="width:47.6%"></span></span>
+          </div>
+          <span class="pct">20<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 47.6%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">운동 습관</span><span class="ja" lang="ja">運動習慣</span></span>
+            <span class="tk" style=""><span class="fl" style="width:42.9%"></span></span>
+          </div>
+          <span class="pct">18<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 42.9%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">골격근량</span><span class="ja" lang="ja">骨格筋量</span></span>
+            <span class="tk" style=""><span class="fl" style="width:38.1%"></span></span>
+          </div>
+          <span class="pct">16<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 38.1%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">식습관</span><span class="ja" lang="ja">食習慣</span></span>
+            <span class="tk" style=""><span class="fl" style="width:26.2%"></span></span>
+          </div>
+          <span class="pct">11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 26.2%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">목표를 세운 적 없음</span><span class="ja" lang="ja">目標を立てたことがない</span></span>
+            <span class="tk" style=""><span class="fl" style="width:7.1%"></span></span>
+          </div>
+          <span class="pct">3<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 7.1%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">티셔츠를 멋지게 입고 싶음</span><span class="ja" lang="ja">Tシャツをかっこよく着こなしたい</span></span>
+            <span class="tk" style=""><span class="fl" style="width:2.4%"></span></span>
+          </div>
+          <span class="pct">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 2.4%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">柔軟性、体の軽さ</span><span class="ja" lang="ja">柔軟性、体の軽さ</span></span>
+            <span class="tk" style=""><span class="fl" style="width:2.4%"></span></span>
+          </div>
+          <span class="pct">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 2.4%</span>
+        </div></div>
+      <p class="note"><div class="ko" lang="ko">→ <b>체지방률·체중이 압도적</b>. Pathfinder의 목표 클러스터 추천도 이 두 축을 가장 명확히 보여주면 자연스럽게 받아들여진다.</div><div class="ja" lang="ja">→ <b>体脂肪率・体重が圧倒的</b>。Pathfinderの目標クラスター推薦もこの2軸を最も明確に示せば、自然に受け入れられる。</div></p>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">패스파인더에서 마음에 든 부분 (복수선택)</span><span class="ja" lang="ja">パスファインダーで気に入った部分（複数選択）</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">パスファインダーで気に入った部分</span><span class="ja" lang="ja">パスファインダーで気に入った部分</span></div>
+      <div class="ms">
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">목표 클러스터 선택 화면</span><span class="ja" lang="ja">目標クラスターを選択する画面</span></span>
+            <span class="tk" style=""><span class="fl" style="width:61.9%"></span></span>
+          </div>
+          <span class="pct">26<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 61.9%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">루트 상세 표시 화면</span><span class="ja" lang="ja">ルートを詳細に表示する画面</span></span>
+            <span class="tk" style=""><span class="fl" style="width:45.2%"></span></span>
+          </div>
+          <span class="pct">19<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 45.2%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">3D 맵</span><span class="ja" lang="ja">3Dマップ</span></span>
+            <span class="tk" style=""><span class="fl" style="width:40.5%"></span></span>
+          </div>
+          <span class="pct">17<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 40.5%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">소요 시간 화면</span><span class="ja" lang="ja">所要時間の画面</span></span>
+            <span class="tk" style=""><span class="fl" style="width:31.0%"></span></span>
+          </div>
+          <span class="pct">13<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 31.0%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">특별히 없음</span><span class="ja" lang="ja">特にない</span></span>
+            <span class="tk" style="background:#fee2e2"><span class="fl" style="width:19.0%; background:var(--bad)"></span></span>
+          </div>
+          <span class="pct">8<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 19.0%</span>
+        </div></div>
+      <p class="note"><div class="ko" lang="ko">→ "특별히 없음"이 19% — Cluster·Big Data 대비 호감 이탈률이 높다.</div><div class="ja" lang="ja">→「特にない」が19% — Cluster・Big Data と比べて好意離脱率が高い。</div></p>
+    </div>
+  </div>
+
+  <div class="row3">
+        <div class="card">
+          <h3><span class="ko" lang="ko">① 목표 설정 화면 (Q13)</span><span class="ja" lang="ja">① 目標設定画面 (Q13)</span></h3>
+          <div class="qhint"><span class="ko" lang="ko">"무엇을 보고 목표를 골랐나"</span><span class="ja" lang="ja">「何を見て目標を選んだか」</span></div>
+          <ul class="bulleted"><li><div class="ko" lang="ko"><b>일러스트·클러스터 이름으로 선택</b>한 비율이 가장 높음 (감성적 선택)</div><div class="ja" lang="ja"><b>イラスト・クラスター名で選択</b>した割合が最も高い（感性的選択）</div></li><li><div class="ko" lang="ko"><b>제시된 3개 선택지가 너무 적다</b>는 의견 다수 — 다른 클러스터도 보고 싶음</div><div class="ja" lang="ja"><b>提示された3つの選択肢が少なすぎる</b>という意見多数 — 他のクラスターも見たい</div></li><li><div class="ko" lang="ko">현재 체성분과 목표 체성분의 <b>차이값 비교 표시</b> 요청</div><div class="ja" lang="ja">現在の体成分と目標体成分の<b>差分比較表示</b>の要望</div></li><li><div class="ko" lang="ko">"근육량을 늘리고 싶은 분 / 체지방률을 줄이고 싶은 분" 등 <b>목적별 1차 분기</b> 제안</div><div class="ja" lang="ja">「筋肉量を増やしたい人／体脂肪率を減らしたい人」など<b>目的別の一次分岐</b>の提案</div></li><li><div class="ko" lang="ko">설정 후 <b>목표 클러스터 상세를 다시 볼 수 없음</b> — 이름만 남음</div><div class="ja" lang="ja">設定後に<b>目標クラスターの詳細を再確認できない</b> — 名前のみ残る</div></li></ul>
+        </div>
+        <div class="card">
+          <h3><span class="ko" lang="ko">② 루트 설명 화면 (Q14)</span><span class="ja" lang="ja">② ルート説明画面 (Q14)</span></h3>
+          <div class="qhint"><span class="ko" lang="ko">"전체 루트 이해에 도움됐는가"</span><span class="ja" lang="ja">「全体ルート理解に役立ったか」</span></div>
+          <ul class="bulleted"><li><div class="ko" lang="ko"><b>3D 맵이 가장 도움됐다</b>는 응답 다수 ("3Dマップが役に立った" 7건+)</div><div class="ja" lang="ja"><b>3Dマップが最も役立った</b>という回答多数（「3Dマップが役に立った」7件以上）</div></li><li><div class="ko" lang="ko">각 단계 클러스터의 <b>체성분 변화량(필요 증감)</b>이 잘 보임</div><div class="ja" lang="ja">各段階クラスターの<b>体成分変化量（必要増減）</b>が見やすい</div></li><li><div class="ko" lang="ko">반대로 <b>"역에 서지 못함" 응답도 4건</b> — 라이트 유저는 길이 보여도 행동에 막힘</div><div class="ja" lang="ja">一方で<b>「役立たなかった」回答も4件</b> — ライトユーザーは道が見えても行動で詰まる</div></li><li><div class="ko" lang="ko">506일·320일 등 일수 표시의 <b>기준이 무엇인지(挑戦的/安定的)</b> 모호</div><div class="ja" lang="ja">506日・320日などの日数表示の<b>基準（挑戦的／安定的）が曖昧</b></div></li></ul>
+        </div>
+        <div class="card">
+          <h3><span class="ko" lang="ko">③ 달성 기간 선택 화면 (Q15)</span><span class="ja" lang="ja">③ 達成期間選択画面 (Q15)</span></h3>
+          <div class="qhint"><span class="ko" lang="ko">"제시 기간이 현실적인가"</span><span class="ja" lang="ja">「提示期間は現実的か」</span></div>
+          <ul class="bulleted"><li><div class="ko" lang="ko"><b>"현실적이다" 응답이 약 60%로 다수</b></div><div class="ja" lang="ja"><b>「現実的」回答が約60%で多数</b></div></li><li><div class="ko" lang="ko">2가지(빠르게/안정적) <b>선택지 자체에 대한 만족 多</b></div><div class="ja" lang="ja">2種類（早め／安定的）の<b>選択肢自体への満足度が高い</b></div></li><li><div class="ko" lang="ko">현재 클러스터가 좋은 위치면 <b>기간이 너무 길게 느껴짐</b> (320일+)</div><div class="ja" lang="ja">現在クラスターが良い位置だと<b>期間が長すぎると感じる</b>（320日以上）</div></li><li><div class="ko" lang="ko">"빠르게" 옵션은 너무 짧고 비현실적이라는 지적도 일부</div><div class="ja" lang="ja">「早め」オプションは短すぎて非現実的という指摘も一部</div></li><li><div class="ko" lang="ko"><b>희망 기간 직접 입력</b> 또는 더 세밀한 조정 요청</div><div class="ja" lang="ja"><b>希望期間の直接入力</b>やより細かい調整の要望</div></li></ul>
+        </div></div>
+
+  <div class="insights">
+    
+    <div class="ins good">
+      <h4><span class="dot"></span><span class="ko" lang="ko">좋았던 점 (Q11/Q17)</span><span class="ja" lang="ja">良かった点 (Q11/Q17)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>3D 맵 + 단계별 루트의 시각적 구조</b><span class="count">10건+</span></span><span class="ja" lang="ja"><b>3Dマップ + 段階的ルートの可視構造</b><span class="count">10件以上</span></span><span class="q">"目標までの段階的な成長をイメージするのに3Dマップが役に立った"</span></li><li><span class="ko" lang="ko"><b>구체적 일수와 도달 클러스터 명시 → 모티베이션</b><span class="count">7건</span></span><span class="ja" lang="ja"><b>具体的な日数と到達クラスターの明示 → モチベーション</b><span class="count">7件</span></span><span class="q">"目指すクラスターの具体的な体成分の数値が出る、とモチベーションになる"</span></li><li><span class="ko" lang="ko"><b>한번에 이상을 향하지 않고 점진적 개선이라는 철학</b></span><span class="ja" lang="ja"><b>一気に理想を目指さず段階的に改善する哲学</b></span><span class="q">"一気に理想を目指さず徐々に改善するInBodyの考え方を反映している"</span></li><li><span class="ko" lang="ko"><b>RPG 같은 게임감</b><span class="count">3건</span></span><span class="ja" lang="ja"><b>RPGのようなゲーム感</b><span class="count">3件</span></span><span class="q">"ゲームみたいで見やすい / クリアできていく感覚が良い"</span></li></ul>
+    </div>
+    
+    <div class="ins warn">
+      <h4><span class="dot"></span><span class="ko" lang="ko">걱정·혼란 (Q18)</span><span class="ja" lang="ja">気になった・混乱した点 (Q18)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>목표 클러스터 선택지가 너무 제한적</b><span class="count">5건+</span></span><span class="ja" lang="ja"><b>目標クラスターの選択肢が少なすぎる</b><span class="count">5件以上</span></span><span class="q">"目標クラスターの選択肢が少ない / 該当するものがなかった"</span></li><li><span class="ko" lang="ko"><b>비논리적 추천: 체지방률↑·Fitscore↓ 권고</b><span class="count">2건</span></span><span class="ja" lang="ja"><b>非論理的な推薦：体脂肪率↑・Fitscore↓ の指示</b><span class="count">2件</span></span><span class="q">"体脂肪率26%なのに上げる指示。基準値以上ならあえて上げる必要はないのでは"</span></li><li><span class="ko" lang="ko"><b>3D 맵 조작 (두 손가락 등) 직관적이지 않음</b></span><span class="ja" lang="ja"><b>3Dマップ操作（二本指など）が直感的でない</b></span><span class="q">"マップの動かし方が分からない、二本指を利用することも分からなかった"</span></li><li><span class="ko" lang="ko"><b>화면 처리가 무거워 열리지 않음</b></span><span class="ja" lang="ja"><b>画面処理が重く開かない</b></span><span class="q">"重たすぎてページが開けない / 一時的に全く開かない時期があった"</span></li><li><span class="ko" lang="ko"><b>경유 클러스터가 더 매력적인 경우</b></span><span class="ja" lang="ja"><b>経由クラスターのほうが魅力的なケース</b></span><span class="q">"A→B→Cで設定したが、最終Cより途中Bのほうが自分の理想に近かった"</span></li><li><span class="ko" lang="ko"><b>루트가 일방적으로 정해짐 (선택권 부재)</b></span><span class="ja" lang="ja"><b>ルートが一方的に決まる（選択権がない）</b></span><span class="q">"道筋を決めつけてしまう / ルートも選択制にしても良いのでは"</span></li></ul>
+    </div>
+    
+    <div class="ins bad">
+      <h4><span class="dot"></span><span class="ko" lang="ko">개선 요청 (Q19)</span><span class="ja" lang="ja">改善要望 (Q19)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b><span style="color:var(--bad)">목표 후 운동·식단 액션 가이드 자동 연동 ⭐</span></b><span class="count">5건+</span></span><span class="ja" lang="ja"><b><span style="color:var(--bad)">目標後の運動・食事アクションガイドの自動連動 ⭐</span></b><span class="count">5件以上</span></span><span class="q">"目標を設定しただけで具体的なアクションがないままになる人が出そう / 目標達成までのサポート機能が少しは合っても良い"</span></li><li><span class="ko" lang="ko"><b>일본어로 "パスファインダー"보다 "ルート"가 직관적</b></span><span class="ja" lang="ja"><b>日本語では「パスファインダー」より「ルート」のほうが直感的</b></span><span class="q">"日本人にはパスよりもルートのほうが分かりやすい"</span></li><li><span class="ko" lang="ko"><b>목표 클러스터 종류·선택폭 확대</b><span class="count">3건</span></span><span class="ja" lang="ja"><b>目標クラスターの種類・選択肢拡大</b><span class="count">3件</span></span><span class="q">"3Dマップで自分でタップして目標を選べるように"</span></li><li><span class="ko" lang="ko"><b>단순 모드 / 상세 모드 분리</b></span><span class="ja" lang="ja"><b>シンプルモード / 詳細モードの分離</b></span><span class="q">"図を基本とした簡単モード、説明を細かく書いた詳細モードに分けてほしい"</span></li><li><span class="ko" lang="ko"><b>설정 후 목표 클러스터 상세 재확인 + 리셋</b><span class="count">2건</span></span><span class="ja" lang="ja"><b>設定後の目標クラスター詳細の再確認 + リセット</b><span class="count">2件</span></span><span class="q">"目標を設定した後はルートと進捗バーしか表示されず詳細を確認できない / リセット機能が分かりにくい"</span></li><li><span class="ko" lang="ko"><b>유지(維持) 모드 달성률 시각화</b></span><span class="ja" lang="ja"><b>維持モードの達成率可視化</b></span><span class="q">"維持の場合は達成率が把握できないのが気になる、可視化されると分かりやすい"</span></li><li><span class="ko" lang="ko"><b>외부 시설(짐) 자동 추천</b></span><span class="ja" lang="ja"><b>外部施設（ジム）の自動推薦</b></span><span class="q">"InBodyが測定できる施設や近隣のジムを自動検索してくれたら行動へ繋がる"</span></li></ul>
+    </div>
+  </div>
+</section>
+
+<section id="bigdata">
+  <div class="sec-head">
+    <span class="sec-tag bigdata">BIG DATA</span>
+    <h2><span class="ko" lang="ko">Big Data 기능</span><span class="ja" lang="ja">Big Data機能</span></h2>
+    <span class="sec-sub"><span class="ko" lang="ko">정량 평균 4.10~4.43/5 · NPS +28.6 · <b>3개 기능 중 최강</b></span><span class="ja" lang="ja">定量平均 4.10~4.43/5 · NPS +28.6 · <b>3機能中で最強</b></span></span>
+  </div>
+
+  <div class="row3">
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">퍼센타일 → 자기 위치 이해</span><span class="ja" lang="ja">パーセンタイル → 自分の位置の理解</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">パーセンタイル情報で多い・少ないを理解できたか</span><span class="ja" lang="ja">パーセンタイル情報で多い・少ないを理解できたか</span></div>
+      <div class="score-row"><div class="score-num">4.12</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 5.0 · 표준편차 1.25 · n=42</div><div class="ja" lang="ja">中央値 5.0 · 標準偏差 1.25 · n=42</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:57.1%"></span></span><span class="cnt">24<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (57.1%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:16.7%"></span></span><span class="cnt">7<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (16.7%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:14.3%"></span></span><span class="cnt">6<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (14.3%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:4.8%"></span></span><span class="cnt">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (4.8%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:7.1%"></span></span><span class="cnt">3<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (7.1%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">그래프로 타인과 비교 용이성</span><span class="ja" lang="ja">グラフでの他者比較の分かりやすさ</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">グラフで他の人と比較して良いか悪いかが分かりやすかったか</span><span class="ja" lang="ja">グラフで他の人と比較して良いか悪いかが分かりやすかったか</span></div>
+      <div class="score-row"><div class="score-num">4.43</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 5.0 · 표준편차 0.8 · n=42 · 전 항목 중 최고</div><div class="ja" lang="ja">中央値 5.0 · 標準偏差 0.8 · n=42 · 全項目中で最高</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:59.5%"></span></span><span class="cnt">25<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (59.5%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:26.2%"></span></span><span class="cnt">11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (26.2%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:11.9%"></span></span><span class="cnt">5<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (11.9%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:2.4%"></span></span><span class="cnt">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (2.4%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:0.0%"></span></span><span class="cnt">0<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (0.0%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">필터(성별·연령·신장) 유용성</span><span class="ja" lang="ja">フィルター（性別・年齢・身長）の有用性</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">フィルターは体成分理解に役立ったか</span><span class="ja" lang="ja">フィルターは体成分理解に役立ったか</span></div>
+      <div class="score-row"><div class="score-num">4.36</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 5.0 · 표준편차 0.88 · n=42</div><div class="ja" lang="ja">中央値 5.0 · 標準偏差 0.88 · n=42</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:54.8%"></span></span><span class="cnt">23<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (54.8%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:31.0%"></span></span><span class="cnt">13<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (31.0%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:11.9%"></span></span><span class="cnt">5<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (11.9%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:0.0%"></span></span><span class="cnt">0<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (0.0%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:2.4%"></span></span><span class="cnt">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (2.4%)</span></div></div>
+    </div>
+  </div>
+
+  <div class="row2">
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">그래프 영역 활성화 기능 유용성</span><span class="ja" lang="ja">グラフ領域の活性化機能の有用性</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">グラフ領域の活性化機能は役立ったか</span><span class="ja" lang="ja">グラフ領域の活性化機能は役立ったか</span></div>
+      <div class="score-row"><div class="score-num">4.1</div><div class="score-of">/ 5.0</div></div>
+      <div class="score-meta"><div class="ko" lang="ko">중앙값 4 · 표준편차 1.04 · n=41 · 존재 자체를 모른다는 응답 다수</div><div class="ja" lang="ja">中央値 4 · 標準偏差 1.04 · n=41 · 「機能の存在を知らなかった」という回答多数</div></div>
+      <div class="dist"><div class="bar s5"><span class="lbl">5</span><span class="track"><span class="fill" style="width:48.8%"></span></span><span class="cnt">20<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (48.8%)</span></div><div class="bar s4"><span class="lbl">4</span><span class="track"><span class="fill" style="width:19.5%"></span></span><span class="cnt">8<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (19.5%)</span></div><div class="bar s3"><span class="lbl">3</span><span class="track"><span class="fill" style="width:26.8%"></span></span><span class="cnt">11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (26.8%)</span></div><div class="bar s2"><span class="lbl">2</span><span class="track"><span class="fill" style="width:2.4%"></span></span><span class="cnt">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (2.4%)</span></div><div class="bar s1"><span class="lbl">1</span><span class="track"><span class="fill" style="width:2.4%"></span></span><span class="cnt">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (2.4%)</span></div></div>
+    </div>
+    
+    <div class="card">
+      <h3><span class="ko" lang="ko">지인·가족 추천 의향 (NPS)</span><span class="ja" lang="ja">知人・家族への推奨意向 (NPS)</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">Big Dataを、知人や家族に勧めたいと思いますか？</span><span class="ja" lang="ja">Big Dataを、知人や家族に勧めたいと思いますか？</span></div>
+      <div class="score-row">
+        <div class="nps-num good">+28.6</div>
+        <div class="score-of"><div class="ko" lang="ko">평균 8.07 / 중앙값 8.5 · <b>전 영역 최고 NPS</b></div><div class="ja" lang="ja">平均 8.07 / 中央値 8.5 · <b>全領域で最高NPS</b></div></div>
+      </div>
+      <div class="nps-strip">
+        <div class="nps-det" style="flex:9"></div>
+        <div class="nps-pas" style="flex:12"></div>
+        <div class="nps-pro" style="flex:21"></div>
+      </div>
+      <div class="nps-legend">
+        <span>0~6 (<span class="ko" lang="ko">Detractor</span><span class="ja" lang="ja">Detractor</span>)</span>
+        <span>7~8 (<span class="ko" lang="ko">Passive</span><span class="ja" lang="ja">Passive</span>)</span>
+        <span>9~10 (<span class="ko" lang="ko">Promoter</span><span class="ja" lang="ja">Promoter</span>)</span>
+      </div>
+      <div class="nps-pdn">
+        <span class="pill-pro"><b>Promoter</b> 21<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (50.0%)</span>
+        <span class="pill-pas"><b>Passive</b> 12<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (28.6%)</span>
+        <span class="pill-det"><b>Detractor</b> 9<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> (21.4%)</span>
+      </div>
+    </div>
+  </div>
+
+  
+    <div class="card">
+      <h3><span class="ko" lang="ko">관심 갖고 본 측정 항목 (복수선택)</span><span class="ja" lang="ja">関心を持って見た測定項目（複数選択）</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">測定項目の中で、関心を持って見た項目</span><span class="ja" lang="ja">測定項目の中で、関心を持って見た項目</span></div>
+      <div class="ms">
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">Fitscore</span><span class="ja" lang="ja">Fitscore</span></span>
+            <span class="tk" style=""><span class="fl" style="width:71.4%"></span></span>
+          </div>
+          <span class="pct">30<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 71.4%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체지방률</span><span class="ja" lang="ja">体脂肪率</span></span>
+            <span class="tk" style=""><span class="fl" style="width:71.4%"></span></span>
+          </div>
+          <span class="pct">30<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 71.4%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">골격근량</span><span class="ja" lang="ja">骨格筋量</span></span>
+            <span class="tk" style=""><span class="fl" style="width:64.3%"></span></span>
+          </div>
+          <span class="pct">27<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 64.3%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체중</span><span class="ja" lang="ja">体重</span></span>
+            <span class="tk" style=""><span class="fl" style="width:47.6%"></span></span>
+          </div>
+          <span class="pct">20<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 47.6%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">근육량</span><span class="ja" lang="ja">筋肉量</span></span>
+            <span class="tk" style=""><span class="fl" style="width:38.1%"></span></span>
+          </div>
+          <span class="pct">16<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 38.1%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">체지방량</span><span class="ja" lang="ja">体脂肪量</span></span>
+            <span class="tk" style=""><span class="fl" style="width:26.2%"></span></span>
+          </div>
+          <span class="pct">11<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 26.2%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">하반신 근육 레벨</span><span class="ja" lang="ja">下半身筋肉レベル</span></span>
+            <span class="tk" style=""><span class="fl" style="width:16.7%"></span></span>
+          </div>
+          <span class="pct">7<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 16.7%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">내장지방 레벨</span><span class="ja" lang="ja">内臓脂肪レベル</span></span>
+            <span class="tk" style=""><span class="fl" style="width:14.3%"></span></span>
+          </div>
+          <span class="pct">6<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 14.3%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">基礎代謝量</span><span class="ja" lang="ja">基礎代謝量</span></span>
+            <span class="tk" style=""><span class="fl" style="width:11.9%"></span></span>
+          </div>
+          <span class="pct">5<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 11.9%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">BMI</span><span class="ja" lang="ja">BMI</span></span>
+            <span class="tk" style=""><span class="fl" style="width:7.1%"></span></span>
+          </div>
+          <span class="pct">3<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 7.1%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">ウエストヒップ比</span><span class="ja" lang="ja">ウエストヒップ比</span></span>
+            <span class="tk" style=""><span class="fl" style="width:4.8%"></span></span>
+          </div>
+          <span class="pct">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 4.8%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">신장</span><span class="ja" lang="ja">身長</span></span>
+            <span class="tk" style=""><span class="fl" style="width:4.8%"></span></span>
+          </div>
+          <span class="pct">2<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 4.8%</span>
+        </div>
+        <div class="item">
+          <div class="ll">
+            <span class="nm"><span class="ko" lang="ko">하반신 레벨</span><span class="ja" lang="ja">下半身レベル</span></span>
+            <span class="tk" style=""><span class="fl" style="width:2.4%"></span></span>
+          </div>
+          <span class="pct">1<span class="ko" lang="ko">명</span><span class="ja" lang="ja">名</span> · 2.4%</span>
+        </div></div>
+      <p class="note"><div class="ko" lang="ko">→ <b>Fitscore와 체지방률이 동률 1위</b>. 신규 지표인 Fitscore가 기존 지표만큼 즉시 관심을 끄는 데 성공. 다만 자유응답에서 "Fitscore가 1000점 만점인지 즉시 알 수 없다"는 지적 다수 → <b>최초 노출 시 점수 표기를 "○○점/1000"으로 통일 필요</b>.</div><div class="ja" lang="ja">→ <b>Fitscoreと体脂肪率が同率1位</b>。新指標のFitscoreが既存指標と同等の関心を即座に獲得することに成功。ただし自由回答で「Fitscoreが1000点満点か即座に分からない」との指摘多数 → <b>初期表示で「○○点/1000」と統一表記が必要</b>。</div></p>
+    </div>
+
+  <div class="insights">
+    
+    <div class="ins good">
+      <h4><span class="dot"></span><span class="ko" lang="ko">좋았던 점 (Q26)</span><span class="ja" lang="ja">良かった点 (Q26)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>같은 조건(연령·성별·신장) 사용자와 비교</b><span class="count">15건+</span></span><span class="ja" lang="ja"><b>同一条件（年齢・性別・身長）のユーザーとの比較</b><span class="count">15件以上</span></span><span class="q">"日本人は人と比べたがるので、他者と比べてどうかが分かるのは すごく良い"</span></li><li><span class="ko" lang="ko"><b>퍼센타일로 자기 위치를 한눈에 파악</b><span class="count">8건</span></span><span class="ja" lang="ja"><b>パーセンタイルで自分の位置を一目で把握</b><span class="count">8件</span></span><span class="q">"パーセンタイルがあることで自分の位置を一目で把握できた"</span></li><li><span class="ko" lang="ko"><b>업무용 InBody와 정밀도 차이 거의 없음</b></span><span class="ja" lang="ja"><b>業務用InBodyとの精度差がほぼない</b></span><span class="q">"業務用で測定したときと精度がほとんど変わらず、データが見やすかった"</span></li><li><span class="ko" lang="ko"><b>필터 기능의 차별성</b><span class="count">5건</span></span><span class="ja" lang="ja"><b>フィルター機能の差別性</b><span class="count">5件</span></span><span class="q">"InBodyアプリよりも詳細に年齢や身長などのフィルタリング機能があり分かりやすい"</span></li><li><span class="ko" lang="ko"><b>객관적 비교 → 새로운 발견·자신감</b></span><span class="ja" lang="ja"><b>客観的比較 → 新たな発見・自信</b></span><span class="q">"良くも悪くも新たな発見につながった / 自信に繋がる"</span></li></ul>
+    </div>
+    
+    <div class="ins warn">
+      <h4><span class="dot"></span><span class="ko" lang="ko">걱정·혼란 (Q27)</span><span class="ja" lang="ja">気になった・混乱した点 (Q27)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>"퍼센타일" 단어 자체가 어렵다</b><span class="count">3건+</span></span><span class="ja" lang="ja"><b>「パーセンタイル」という言葉自体が難しい</b><span class="count">3件以上</span></span><span class="q">"パーセンタイルという言葉を理解できない人も多くいるのでは"</span></li><li><span class="ko" lang="ko"><b>각 항목 탭하면 상세 그래프 나오는 것 모름 (UI 발견성)</b><span class="count">2건</span></span><span class="ja" lang="ja"><b>各項目タップで詳細グラフが出ることを知らない（UI発見性）</b><span class="count">2件</span></span><span class="q">"各項目をタップして詳細を確認できることをより分かりやすく示すべき"</span></li><li><span class="ko" lang="ko"><b>그래프 영역 활성화 기능 존재 자체를 인지 못함</b><span class="count">3건</span></span><span class="ja" lang="ja"><b>グラフ領域の活性化機能の存在を認識できていない</b><span class="count">3件</span></span><span class="q">"このアンケートに回答するまで機能の存在に気付けなかった"</span></li><li><span class="ko" lang="ko"><b>좋다/나쁘다 평가가 직관적이지 않음</b></span><span class="ja" lang="ja"><b>良い／悪いの評価が直感的でない</b></span><span class="q">"良いのか悪いのかの評価が分かりづらい"</span></li><li><span class="ko" lang="ko"><b>일부 미번역 + 항목 한·일 명칭 혼재</b></span><span class="ja" lang="ja"><b>一部未翻訳 + 項目の韓・日表記が混在</b></span><span class="q">"一部翻訳されていない部分があった"</span></li><li><span class="ko" lang="ko"><b>기준치 출처 혼란</b></span><span class="ja" lang="ja"><b>基準値の出所の混乱</b></span><span class="q">"InBody Big Data基準なのか、標準体重なのか、日本人統計なのか はっきりしてほしい"</span></li></ul>
+    </div>
+    
+    <div class="ins bad">
+      <h4><span class="dot"></span><span class="ko" lang="ko">개선 요청 (Q28)</span><span class="ja" lang="ja">改善要望 (Q28)</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>"각 항목을 탭하세요" 안내 + 화살표(＞) 추가</b><span class="count">3건</span></span><span class="ja" lang="ja"><b>「各項目をタップしてください」案内 + ＞ 矢印追加</b><span class="count">3件</span></span><span class="q">"項目名の右側に「＞」と矢印マークを付ければ次のページがあることを示せる"</span></li><li><span class="ko" lang="ko"><b>그래프 영역 활성화 버튼 가시성 강화</b><span class="count">2건</span></span><span class="ja" lang="ja"><b>グラフ領域活性化ボタンの可視性強化</b><span class="count">2件</span></span><span class="q">"グラフの真下にボタンを設置しても良さそう / もう少し目立っても良い"</span></li><li><span class="ko" lang="ko"><b>Fitscore = 1000점 만점 명시</b></span><span class="ja" lang="ja"><b>Fitscore = 1000点満点であることの明示</b></span><span class="q">"Fitscore→フィットスコアなど名称をカタカナに統一 / 100点満点ではないと一目で分かるように"</span></li><li><span class="ko" lang="ko"><b>하반신 근육 레벨에도 퍼센타일 표시</b></span><span class="ja" lang="ja"><b>下半身筋肉レベルにもパーセンタイル表示</b></span><span class="q">"下半身筋肉レベルもパーセンタイル表示できれば自分の位置が分かりやすい"</span></li><li><span class="ko" lang="ko"><b>신장 항목은 의미 없음 — 제외 검토</b></span><span class="ja" lang="ja"><b>身長項目は意味がない — 除外検討</b></span><span class="q">"身長はいらない、低いのは知っている、頑張っても改善できない"</span></li><li><span class="ko" lang="ko"><b>운동 가능 여부 등 라이프스타일 비교 필터</b></span><span class="ja" lang="ja"><b>運動可否などライフスタイル比較フィルター</b></span><span class="q">"運動の可否などで比べれたら面白い"</span></li></ul>
+    </div>
+  </div>
+</section>
+
+<section id="overall">
+  <div class="sec-head">
+    <span class="sec-tag overall">OVERALL</span>
+    <h2><span class="ko" lang="ko">전체 의견 (Q30)</span><span class="ja" lang="ja">全体的な感想 (Q30)</span></h2>
+    <span class="sec-sub"><span class="ko" lang="ko">자유 응답 39개 · 종합 인상 + 시스템·운영 이슈</span><span class="ja" lang="ja">自由回答 39件 · 総合的印象 + システム・運用上の課題</span></span>
+  </div>
+
+  <div class="row2">
+    
+    <div class="ins good">
+      <h4><span class="dot"></span><span class="ko" lang="ko">긍정 인상</span><span class="ja" lang="ja">ポジティブな印象</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>일본인 평균과 비교 가능 = 기존 InBody 앱과의 결정적 차별점</b></span><span class="ja" lang="ja"><b>日本人平均との比較=既存InBodyアプリとの決定的差別化</b></span><span class="q">"これまでのInBodyアプリは標準との比較がメインだったが、日本人の平均と比較できるのが面白い"</span></li><li><span class="ko" lang="ko"><b>"가정용보다 좋아서 업무용 사용자에게 클레임 올 수준"</b></span><span class="ja" lang="ja"><b>「家庭用なのに良すぎて業務用ユーザーからクレームが来そう」</b></span><span class="q">"これが家庭用向けでリリースされると業務用ユーザーからクレームが来そう、それくらい良いツール"</span></li><li><span class="ko" lang="ko"><b>"체중만 보는 다이어트는 그만하라"는 메시지에 공감</b></span><span class="ja" lang="ja"><b>「体重だけのダイエットはやめよう」というメッセージに共感</b></span><span class="q">"体重だけに頼ったダイエットはもうやめましょう、という言葉がいい"</span></li><li><span class="ko" lang="ko"><b>객관적 자기 인식 → 운동 동기부여로 직결</b></span><span class="ja" lang="ja"><b>客観的な自己認識 → 運動への動機付けに直結</b></span><span class="q">"体成分を改善して変化を見てみたい欲求が湧いた"</span></li></ul>
+    </div>
+    
+    <div class="ins warn">
+      <h4><span class="dot"></span><span class="ko" lang="ko">부정·우려 인상</span><span class="ja" lang="ja">ネガティブ・懸念</span></h4>
+      <ul><li><span class="ko" lang="ko"><b>전반적으로 정보 과다 — 라이트 유저에게 부담</b></span><span class="ja" lang="ja"><b>全体的に情報過多 — ライトユーザーには負担</b></span><span class="q">"意欲の高い人なら良いが、ライトユーザーからすると読み込むのに少しエネルギーを使う"</span></li><li><span class="ko" lang="ko"><b>일부 자동번역 인상 + 줄바꿈 정렬 안됨 → 신뢰성 저하</b></span><span class="ja" lang="ja"><b>一部に自動翻訳の印象 + 改行が揃わない → 信頼性低下</b></span><span class="q">"自動翻訳している印象を受けやすくなる、見た目のスマートさにこだわってほしい"</span></li><li><span class="ko" lang="ko"><b>"전반적으로 전달이 잘 안됐다"는 강한 부정 응답</b><span class="count">1건</span></span><span class="ja" lang="ja"><b>「全体的に伝わりづらい」という強い否定回答</b><span class="count">1件</span></span></li><li><span class="ko" lang="ko"><b>고연령 사용자에게 조작이 어렵다</b></span><span class="ja" lang="ja"><b>高年齢ユーザーにとって操作が難しい</b></span><span class="q">"高年齢の人は理解して操作するのに時間がかかる"</span></li></ul>
+    </div>
+  </div>
+
+  
+    <div class="card">
+      <h3><span class="ko" lang="ko">시스템·운영 측면의 명확한 버그·페인포인트</span><span class="ja" lang="ja">システム・運用面の明確なバグ・ペインポイント</span></h3>
+      <div class="qhint"><span class="ko" lang="ko">반복 등장하는 기능 외 이슈 — 즉시 백로그 등록 권장</span><span class="ja" lang="ja">機能以外で繰り返し挙がった課題 — バックログ即登録推奨</span></div>
+      <ul class="bulleted"><li><div class="ko" lang="ko"><b>업무용 InBody 측정 데이터 연동 요구</b> — Q30에서 3건+ 직접 언급. 사내 베타테스터 특성상 가장 큰 미스매치.</div><div class="ja" lang="ja"><b>業務用InBody測定データの連携要望</b> — Q30で3件以上直接言及。社内ベータテスターの特性上、最大のミスマッチ。</div></li><li><div class="ko" lang="ko"><b>InBody Challenge 참여 가능하도록</b></div><div class="ja" lang="ja"><b>InBody Challenge参加可能化</b></div></li><li><div class="ko" lang="ko"><b>기존 InBody 앱과 병렬 데이터 관리</b> — 이전부터 사용한 데이터를 잃고 싶지 않음</div><div class="ja" lang="ja"><b>既存InBodyアプリとの並列データ管理</b> — これまでのデータを失いたくない</div></li><li><div class="ko" lang="ko"><b>데이터 사용량 1.3GB 과다</b> — 테스트 기간만으로 측정. 데이터 통신 타이밍 수동 설정 옵션 요청.</div><div class="ja" lang="ja"><b>データ使用量1.3GB過多</b> — テスト期間のみで計測。データ通信タイミングの手動設定オプション要望。</div></li><li><div class="ko" lang="ko"><b>2개 스마트폰에서 데이터 연동 시 잘못된 폰의 데이터가 동기화되는 버그</b> — A폰 → B폰 의도였으나 반대로 동작</div><div class="ja" lang="ja"><b>2台のスマホ連携で誤った端末のデータが同期するバグ</b> — A端末→B端末を意図したが逆方向に動作</div></li><li><div class="ko" lang="ko"><b>홈 화면 수치(Fitscore, 체중, 골격근량, 체지방률) 최신값이 우측에 → 가독성 떨어짐</b></div><div class="ja" lang="ja"><b>ホーム画面の数値（Fitscore・体重・骨格筋量・体脂肪率）の最新値が右側 → 可読性低下</b></div></li><li><div class="ko" lang="ko"><b>홈 최상단 표시는 Fitscore보다 클러스터가 더 적절</b>하다는 제안</div><div class="ja" lang="ja"><b>ホーム最上部表示はFitscoreよりクラスターが適切</b>という提案</div></li><li><div class="ko" lang="ko"><b>해·달 마크 시간대 불일치</b> — 홈 화면은 12시간 구분, 측정 결과는 8시간 구분</div><div class="ja" lang="ja"><b>太陽・月マークの時間帯不一致</b> — ホーム画面は12時間区分、測定結果は8時間区分</div></li><li><div class="ko" lang="ko"><b>가정용 InBody와 자택 환경(Wi-Fi/Bluetooth) 연결 어려움</b> — "타사 제품을 샀다"는 응답까지 나옴</div><div class="ja" lang="ja"><b>家庭用InBodyと自宅環境（Wi-Fi/Bluetooth）の接続困難</b> — 「他社製品を買った」との回答まで</div></li><li><div class="ko" lang="ko"><b>InBody와 앱 페어링 절차(개별 번호·Wi-Fi/Bluetooth)가 번잡</b></div><div class="ja" lang="ja"><b>InBodyとアプリのペアリング手順（個別番号・Wi-Fi/Bluetooth）が煩雑</b></div></li><li><div class="ko" lang="ko"><b>DayLog의 입력 정확도 부족 — 다른 앱과 병용하게 됨</b></div><div class="ja" lang="ja"><b>DayLogの入力精度不足 — 他アプリと併用される</b></div></li><li><div class="ko" lang="ko"><b>InBody Everyday 노출 강화</b> — 지속률을 높이는 매력적 기능인데 사용자 인지도가 낮음</div><div class="ja" lang="ja"><b>InBody Everyday の露出強化</b> — 継続率を高める魅力的機能だが認知度が低い</div></li></ul>
+    </div>
+  
+    <div class="card strategic">
+      <h3><span class="ko" lang="ko">전략적 함의 — 일본 시장에서 "어떤 가치"가 가장 강하게 통했나</span><span class="ja" lang="ja">戦略的含意 — 日本市場で「どの価値」が最も強く刺さったか</span></h3>
+      <ol class="bulleted"><li><div class="ko" lang="ko"><b>"일본인 평균과의 비교"라는 가치 명제는 매우 강력하다.</b> Big Data NPS +28.6, 그래프 비교 용이성 4.43/5 — 전 항목 중 최고. 일본 시장 메시징의 1순위 후크로 가져갈 만함.</div><div class="ja" lang="ja"><b>「日本人平均との比較」という価値提案は極めて強力。</b>Big Data NPS +28.6、グラフ比較の分かりやすさ 4.43/5 — 全項目中の最高値。日本市場のメッセージングの第一の訴求点として活用できる。</div></li><li><div class="ko" lang="ko"><b>클러스터의 "MBTI화" 시도는 성공했다.</b> 단, "クラスター"라는 단어가 의학적으로 부정적 이미지(감염 클러스터)를 가진다는 일본 특유 이슈는 명칭 변경을 진지하게 검토할 만한 신호다.</div><div class="ja" lang="ja"><b>クラスターの「MBTI化」の試みは成功した。</b>ただし「クラスター」という単語が医療的にネガティブな印象（感染クラスター）を持つという日本特有の課題は、名称変更を真剣に検討すべきシグナル。</div></li><li><div class="ko" lang="ko"><b>Pathfinder는 "비전은 좋지만 실행이 비어있다."</b> 목표 설정 후 운동·식단·외부 시설 연계가 다음 우선순위. 이 갭을 메우면 NPS +2.4 → +20 이상 점프 가능성.</div><div class="ja" lang="ja"><b>Pathfinderは「ビジョンは良いが実行が空洞」</b>。目標設定後の運動・食事・外部施設連携が次の優先課題。このギャップを埋めれば NPS +2.4 → +20以上 へジャンプの可能性。</div></li><li><div class="ko" lang="ko"><b>UI 발견성 문제는 디자인 미세조정으로 큰 효과를 볼 수 있는 영역.</b> ＞ 화살표, 안내 텍스트, 그래프 영역 활성화 버튼 위치 같은 작은 변경으로 "기능을 알지도 못한 채 떠나는 사용자"를 줄일 수 있다.</div><div class="ja" lang="ja"><b>UI発見性の問題は、デザインの微調整で大きな効果が見込める領域。</b>＞矢印、案内テキスト、グラフ領域活性化ボタンの位置といった小さな変更で「機能を知らないまま離脱するユーザー」を減らせる。</div></li><li><div class="ko" lang="ko"><b>업무용 InBody 데이터 연동은 사내 사용자 신뢰 확보의 게이트키퍼.</b> 실제 출시 전 우선순위에 두지 않으면 일본 법인 내부 옹호자(advocate)부터 잃는다.</div><div class="ja" lang="ja"><b>業務用InBodyデータ連携は社内ユーザー信頼獲得のゲートキーパー。</b>本リリース前の優先課題に置かないと、日本法人内部のアドボケイトから失うことになる。</div></li></ol>
+    </div>
+</section>
+
+<footer>
+  <div class="ko" lang="ko">분석 데이터 · "[InBody+ Jp] 베타테스트 피드백_최종_JP" Google Form 응답 (n=42, 2026-04-21~04-29) · BizDev Team Lead 임수철</div><div class="ja" lang="ja">分析データ ·「[InBody+ Jp] ベータテストフィードバック_最終_JP」Googleフォーム回答 (n=42, 2026-04-21~04-29) · BizDev Team Lead Lim Soocheol</div>
+</footer>
+
+</div>
+
+<button class="back-top" id="backTop" aria-label="Top">↑</button>
+
+<script>
+(function(){
+  // Language toggle
+  var html = document.documentElement;
+  var saved = (function(){
+    try{ return localStorage.getItem('jp_report_lang'); }catch(e){ return null; }
+  })();
+  if(saved === 'ja' || saved === 'ko'){
+    html.setAttribute('data-lang', saved);
+    html.setAttribute('lang', saved);
+  }
+  document.querySelectorAll('.lang-switch button').forEach(function(btn){
+    if(btn.dataset.lang === html.getAttribute('data-lang')){
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+    btn.addEventListener('click', function(){
+      var l = btn.dataset.lang;
+      html.setAttribute('data-lang', l);
+      html.setAttribute('lang', l);
+      document.querySelectorAll('.lang-switch button').forEach(function(b){
+        b.classList.toggle('active', b.dataset.lang === l);
+      });
+      try{ localStorage.setItem('jp_report_lang', l); }catch(e){}
+    });
+  });
+
+  // Reading progress
+  var bar = document.getElementById('progress');
+  var btn = document.getElementById('backTop');
+  function onScroll(){
+    var h = document.documentElement;
+    var sc = h.scrollTop || document.body.scrollTop;
+    var max = (h.scrollHeight - h.clientHeight) || 1;
+    bar.style.width = (sc/max*100) + '%';
+    btn.classList.toggle('show', sc > 600);
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  btn.addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  // Smooth scroll for nav anchors
+  document.querySelectorAll('.nav-links a').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var t = document.querySelector(a.getAttribute('href'));
+      if(t){
+        e.preventDefault();
+        t.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
